@@ -11,85 +11,151 @@
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body class="bg-gray-100">
 
-<!-- TOPO -->
-<header class="flex items-center px-6 py-4 bg-white border-b">
-  <img src="img/logo-herbert-faber.png" class="h-12">
-</header>
+  <!-- TOPO -->
+  <header class="flex items-center px-6 py-4 bg-white border-b shadow-sm">
+    <img src="img/logo-herbert-faber.png" alt="Herbert Faber" class="h-12">
+  </header>
 
-<!-- CONTEÚDO -->
-<div class="p-6 max-w-5xl mx-auto">
+  <!-- CONTEÚDO -->
+  <main class="max-w-5xl mx-auto p-6 space-y-6">
 
-  <!-- CONFIGURAÇÃO -->
-  <input id="valorUnidade" type="number" placeholder="Valor do imóvel"
-   class="w-full p-2 border rounded mb-3" oninput="atualizar()">
+    <!-- CONFIGURAÇÃO -->
+    <section class="bg-white p-6 rounded-xl shadow space-y-4">
 
-  <input id="ato" type="number" placeholder="Ato"
-   class="w-full p-2 border rounded mb-3" oninput="atualizar()">
+      <h2 class="text-lg font-bold text-gray-700">Configuração Financeira</h2>
 
-  <div class="grid grid-cols-2 gap-2 mb-3">
-    <input id="mensalQtd" type="number" placeholder="Qtd Meses" oninput="atualizar()" class="p-2 border rounded">
-    <input id="mensalValor" type="number" placeholder="Valor Mensal" oninput="atualizar()" class="p-2 border rounded">
-  </div>
+      <input id="valorUnidade" type="number"
+        placeholder="Valor do imóvel"
+        class="w-full p-2 border rounded"
+        oninput="atualizar()">
 
-  <div class="grid grid-cols-2 gap-2 mb-3">
-    <input id="anualQtd" type="number" placeholder="Qtd Anuais" oninput="atualizar()" class="p-2 border rounded">
-    <input id="anualValor" type="number" placeholder="Valor Anual" oninput="atualizar()" class="p-2 border rounded">
-  </div>
+      <input id="ato" type="number"
+        placeholder="Ato / Sinal"
+        class="w-full p-2 border rounded"
+        oninput="atualizar()">
 
-  <input id="unica" type="number" placeholder="Parcela Única"
-   class="w-full p-2 border rounded mb-4" oninput="atualizar()">
+      <!-- Mensais -->
+      <div class="grid grid-cols-2 gap-2">
+        <input id="mensalQtd" type="number"
+          placeholder="Qtd de meses"
+          class="p-2 border rounded"
+          oninput="atualizar()">
 
-  <!-- RESULTADO -->
-  <div class="bg-white p-6 rounded shadow">
-    <p>Saldo Financiamento:</p>
-    <h2 id="view-saldo" class="text-2xl font-bold text-green-600">R$ 0,00</h2>
-    <p class="text-sm mt-2">Proposta válida até: <b id="validade"></b></p>
-  </div>
+        <input id="mensalValor" type="number"
+          placeholder="Valor mensal"
+          class="p-2 border rounded"
+          oninput="atualizar()">
+      </div>
 
-</div>
+      <!-- Anuais -->
+      <div class="grid grid-cols-2 gap-2">
+        <input id="anualQtd" type="number"
+          placeholder="Qtd anuais"
+          class="p-2 border rounded"
+          oninput="atualizar()">
 
-<script>
-const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+        <input id="anualValor" type="number"
+          placeholder="Valor anual"
+          class="p-2 border rounded"
+          oninput="atualizar()">
+      </div>
 
-function atualizar(){
-  const valor = Number(valorUnidade.value||0);
-  const total = Number(ato.value||0) +
-    (mensalQtd.value||0)*(mensalValor.value||0) +
-    (anualQtd.value||0)*(anualValor.value||0) +
-    Number(unica.value||0);
+      <input id="unica" type="number"
+        placeholder="Parcela única"
+        class="w-full p-2 border rounded"
+        oninput="atualizar()">
 
-  view-saldo.innerText = moeda(valor-total);
+      <button onclick="limparSimulacao()"
+        class="w-full bg-gray-700 text-white py-2 rounded hover:bg-gray-800">
+        🔁 Simular outro cenário
+      </button>
 
-  const d = new Date();
-  d.setDate(d.getDate()+7);
-  validade.innerText = d.toLocaleDateString("pt-BR");
+    </section>
 
-  localStorage.setItem("simulacao", JSON.stringify({
-    valor, ato:ato.value, mensalQtd:mensalQtd.value,
-    mensalValor:mensalValor.value, anualQtd:anualQtd.value,
-    anualValor:anualValor.value, unica:unica.value
-  }));
-}
+    <!-- RESULTADO -->
+    <section class="bg-white p-6 rounded-xl shadow space-y-2">
+      <p class="text-sm text-gray-500">Saldo de financiamento</p>
+      <h2 id="view-saldo" class="text-3xl font-bold text-green-600">
+        R$ 0,00
+      </h2>
 
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("service-worker.js");
-}
+      <p class="text-sm text-gray-500">
+        Proposta válida até:
+        <span id="validade" class="font-bold"></span>
+      </p>
+    </section>
 
-window.onload=()=>{
-  const d=JSON.parse(localStorage.getItem("simulacao"));
-  if(!d)return;
-  Object.keys(d).forEach(k=>window[k]&&(window[k].value=d[k]));
-  atualizar();
-}
-</script>
+  </main>
+
+  <!-- SCRIPT -->
+  <script>
+    const moeda = valor =>
+      valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    function atualizar() {
+      const valorUnidade = Number(document.getElementById("valorUnidade").value) || 0;
+      const ato = Number(document.getElementById("ato").value) || 0;
+
+      const mensalQtd = Number(document.getElementById("mensalQtd").value) || 0;
+      const mensalValor = Number(document.getElementById("mensalValor").value) || 0;
+
+      const anualQtd = Number(document.getElementById("anualQtd").value) || 0;
+      const anualValor = Number(document.getElementById("anualValor").value) || 0;
+
+      const unica = Number(document.getElementById("unica").value) || 0;
+
+      const totalPago =
+        ato +
+        mensalQtd * mensalValor +
+        anualQtd * anualValor +
+        unica;
+
+      const saldo = valorUnidade - totalPago;
+
+      document.getElementById("view-saldo").innerText = moeda(saldo);
+
+      const data = new Date();
+      data.setDate(data.getDate() + 7);
+      document.getElementById("validade").innerText =
+        data.toLocaleDateString("pt-BR");
+
+      localStorage.setItem("simulacao", JSON.stringify({
+        valorUnidade,
+        ato,
+        mensalQtd,
+        mensalValor,
+        anualQtd,
+        anualValor,
+        unica
+      }));
+    }
+
+    function limparSimulacao() {
+      ["ato", "mensalQtd", "mensalValor", "anualQtd", "anualValor", "unica"]
+        .forEach(id => document.getElementById(id).value = "");
+      atualizar();
+    }
+
+    window.onload = () => {
+      const dados = JSON.parse(localStorage.getItem("simulacao"));
+      if (!dados) return;
+
+      Object.keys(dados).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = dados[id];
+      });
+
+      atualizar();
+    };
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
 
 </body>
 </html>
